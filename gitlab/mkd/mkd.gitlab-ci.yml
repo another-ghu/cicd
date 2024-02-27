@@ -93,4 +93,3 @@ deploy dev:
   rules:
     - if: $CI_COMMIT_BRANCH == 'dev'
       when: on_success
-
