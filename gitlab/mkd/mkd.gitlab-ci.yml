@@ -1,9 +1,9 @@
 stages:
   - deploy
-deploy main:
+deploy latest:
   stage: deploy
   environment:
-    name: main
+    name: latest
     url: https://$CI_PROJECT_NAME.rutmirror.ru/
   before_script:
     - CONTAINER_STATUS=$(docker container inspect $CI_PROJECT_NAME.latest >/dev/null 2>&1 && echo true || echo false)
@@ -28,7 +28,7 @@ deploy main:
             --label traefik.http.routers.${CI_PROJECT_NAME}.entrypoints="web" \
             lmrctt/${CI_PROJECT_NAME}:latest
         echo -e "${TXT_RED} Копирую репозиторий в контейнер ${TXT_CLEAR}"
-          docker cp app/. ${CI_PROJECT_NAME}.latest:/www/
+          docker cp codebase/. ${CI_PROJECT_NAME}.latest:/www/
       else
         echo -e "${TXT_RED} Контейнер с именем '${CI_PROJECT_NAME}.latest' не существует ${TXT_CLEAR}"
           docker run -d \
@@ -41,7 +41,7 @@ deploy main:
             --label traefik.http.routers.${CI_PROJECT_NAME}.entrypoints="web" \
             lmrctt/${CI_PROJECT_NAME}:latest
         echo -e "${TXT_RED} Копирую репозиторий в контейнер ${TXT_CLEAR}"
-          docker cp app/. ${CI_PROJECT_NAME}.latest:/www/
+          docker cp codebase/. ${CI_PROJECT_NAME}.latest:/www/
       fi
   rules:
     - if: $CI_COMMIT_BRANCH == 'main'
@@ -75,7 +75,7 @@ deploy dev:
             --label traefik.http.routers.${CI_PROJECT_NAME}-dev.entrypoints="web" \
             lmrctt/rgisprio:dev
         echo -e "${TXT_RED} Копирую репозиторий в контейнер ${TXT_CLEAR}"
-          docker cp app/. ${CI_PROJECT_NAME}.dev:/www/
+          docker cp codebase/. ${CI_PROJECT_NAME}.dev:/www/
       else
         echo -e "${TXT_RED} Контейнер с именем '${CI_PROJECT_NAME}.dev' не существует ${TXT_CLEAR}"
           docker run -d \
@@ -88,7 +88,7 @@ deploy dev:
             --label traefik.http.routers.${CI_PROJECT_NAME}-dev.entrypoints="web" \
             lmrctt/rgisprio:dev
         echo -e "${TXT_RED} Копирую репозиторий в контейнер ${TXT_CLEAR}"
-          docker cp app/. ${CI_PROJECT_NAME}.dev:/www/
+          docker cp codebase/. ${CI_PROJECT_NAME}.dev:/www/
       fi
   rules:
     - if: $CI_COMMIT_BRANCH == 'dev'
