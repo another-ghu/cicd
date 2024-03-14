@@ -1,51 +1,53 @@
 stages:
   - deploy
+variables:
+  PROJECT_NAME: "rgisprio"
 deploy prod:
   stage: deploy
   environment:
     name: prod
-    url: https://$CI_PROJECT_NAME.rutmirror.ru/
+    url: https://$PROJECT_NAME.rutmirror.ru/
   before_script:
-    - CONTAINER_STATUS=$(docker container inspect $CI_PROJECT_NAME.prod >/dev/null 2>&1 && echo true || echo false)
+    - CONTAINER_STATUS=$(docker container inspect $PROJECT_NAME.prod >/dev/null 2>&1 && echo true || echo false)
     - TXT_RED="\e[31m" && TXT_CLEAR="\e[0m"
   script:
     - |
       if [ "$CONTAINER_STATUS" = "true" ]; then
-        echo -e "${TXT_RED} Контейнер с именем ${CI_PROJECT_NAME}.prod существует ${TXT_CLEAR}"
-        echo -e "${TXT_RED} Останавливаю контейнер ${CI_PROJECT_NAME}.prod ${TXT_CLEAR}"
-          docker container stop ${CI_PROJECT_NAME}.prod
-          docker container rm ${CI_PROJECT_NAME}.prod
-        echo -e "${TXT_RED} Скачиваю последнею версию образа ${CI_PROJECT_NAME}:prod ${TXT_CLEAR}"
-          docker pull lmrctt/${CI_PROJECT_NAME}:prod
+        echo -e "${TXT_RED} Контейнер с именем ${PROJECT_NAME}.prod существует ${TXT_CLEAR}"
+        echo -e "${TXT_RED} Останавливаю контейнер ${PROJECT_NAME}.prod ${TXT_CLEAR}"
+          docker container stop ${PROJECT_NAME}.prod
+          docker container rm ${PROJECT_NAME}.prod
+        echo -e "${TXT_RED} Скачиваю последнею версию образа ${PROJECT_NAME}:prod ${TXT_CLEAR}"
+          docker pull lmrctt/${PROJECT_NAME}:prod
         echo -e "${TXT_RED} Запускаю контейнер ${TXT_CLEAR}"
           docker run -d \
-            --name ${CI_PROJECT_NAME}.prod \
+            --name ${PROJECT_NAME}.prod \
             --restart unless-stopped \
             --network docker-network \
             --label traefik.enable="true" \
-            --label traefik.http.routers.${CI_PROJECT_NAME}.rule="Host(\`${CI_PROJECT_NAME}.rutmirror.ru\`)" \
-            --label traefik.http.services.${CI_PROJECT_NAME}.loadbalancer.server.port="80" \
-            --label traefik.http.routers.${CI_PROJECT_NAME}.entrypoints="web" \
-            lmrctt/${CI_PROJECT_NAME}:prod
+            --label traefik.http.routers.${PROJECT_NAME}.rule="Host(\`${PROJECT_NAME}.rutmirror.ru\`)" \
+            --label traefik.http.services.${PROJECT_NAME}.loadbalancer.server.port="80" \
+            --label traefik.http.routers.${PROJECT_NAME}.entrypoints="web" \
+            lmrctt/${PROJECT_NAME}:prod
         echo -e "${TXT_RED} Копирую репозиторий в контейнер ${TXT_CLEAR}"
-          docker cp app/. ${CI_PROJECT_NAME}.prod:/www/
+          docker cp app/. ${PROJECT_NAME}.prod:/www/
         echo -e "${TXT_RED} Выставляю права на файлы ${TXT_CLEAR}"
-          docker exec ${CI_PROJECT_NAME}.prod chown -R unit:unit /www      
+          docker exec ${PROJECT_NAME}.prod chown -R unit:unit /www      
       else
-        echo -e "${TXT_RED} Контейнер с именем '${CI_PROJECT_NAME}.prod' не существует ${TXT_CLEAR}"
+        echo -e "${TXT_RED} Контейнер с именем '${PROJECT_NAME}.prod' не существует ${TXT_CLEAR}"
           docker run -d \
-            --name ${CI_PROJECT_NAME}.prod \
+            --name ${PROJECT_NAME}.prod \
             --restart unless-stopped \
             --network docker-network \
             --label traefik.enable="true" \
-            --label traefik.http.routers.${CI_PROJECT_NAME}.rule="Host(\`${CI_PROJECT_NAME}.rutmirror.ru\`)" \
-            --label traefik.http.services.${CI_PROJECT_NAME}.loadbalancer.server.port="80" \
-            --label traefik.http.routers.${CI_PROJECT_NAME}.entrypoints="web" \
-            lmrctt/${CI_PROJECT_NAME}:prod
+            --label traefik.http.routers.${PROJECT_NAME}.rule="Host(\`${PROJECT_NAME}.rutmirror.ru\`)" \
+            --label traefik.http.services.${PROJECT_NAME}.loadbalancer.server.port="80" \
+            --label traefik.http.routers.${PROJECT_NAME}.entrypoints="web" \
+            lmrctt/${PROJECT_NAME}:prod
         echo -e "${TXT_RED} Копирую репозиторий в контейнер ${TXT_CLEAR}"
-          docker cp app/. ${CI_PROJECT_NAME}.prod:/www/
+          docker cp app/. ${PROJECT_NAME}.prod:/www/
         echo -e "${TXT_RED} Выставляю права на файлы ${TXT_CLEAR}"
-          docker exec ${CI_PROJECT_NAME}.prod chown -R unit:unit /www      
+          docker exec ${PROJECT_NAME}.prod chown -R unit:unit /www      
       fi
   rules:
     - if: $CI_COMMIT_BRANCH == 'main'
@@ -57,48 +59,48 @@ deploy dev:
   stage: deploy
   environment:
     name: dev
-    url: https://dev.$CI_PROJECT_NAME.rutmirror.ru/
+    url: https://dev.$PROJECT_NAME.rutmirror.ru/
   before_script:
-    - CONTAINER_STATUS=$(docker container inspect $CI_PROJECT_NAME.dev >/dev/null 2>&1 && echo true || echo false)
+    - CONTAINER_STATUS=$(docker container inspect $PROJECT_NAME.dev >/dev/null 2>&1 && echo true || echo false)
     - TXT_RED="\e[31m" && TXT_CLEAR="\e[0m"
   script:
     - |
       if [ "$CONTAINER_STATUS" = "true" ]; then
-        echo -e "${TXT_RED} Контейнер с именем ${CI_PROJECT_NAME}.dev существует ${TXT_CLEAR}"
-        echo -e "${TXT_RED} Останавливаю контейнер ${CI_PROJECT_NAME}.dev ${TXT_CLEAR}"
-          docker container stop ${CI_PROJECT_NAME}.dev
-          docker container rm ${CI_PROJECT_NAME}.dev
-        echo -e "${TXT_RED} Скачиваю последнею версию образа ${CI_PROJECT_NAME}:dev ${TXT_CLEAR}"
-          docker pull lmrctt/${CI_PROJECT_NAME}:dev
+        echo -e "${TXT_RED} Контейнер с именем ${PROJECT_NAME}.dev существует ${TXT_CLEAR}"
+        echo -e "${TXT_RED} Останавливаю контейнер ${PROJECT_NAME}.dev ${TXT_CLEAR}"
+          docker container stop ${PROJECT_NAME}.dev
+          docker container rm ${PROJECT_NAME}.dev
+        echo -e "${TXT_RED} Скачиваю последнею версию образа ${PROJECT_NAME}:dev ${TXT_CLEAR}"
+          docker pull lmrctt/${PROJECT_NAME}:dev
         echo -e "${TXT_RED} Запускаю контейнер ${TXT_CLEAR}"
           docker run -d \
-            --name ${CI_PROJECT_NAME}.dev \
+            --name ${PROJECT_NAME}.dev \
             --restart unless-stopped \
             --network docker-network \
             --label traefik.enable="true" \
-            --label traefik.http.routers.${CI_PROJECT_NAME}-dev.rule="Host(\`dev.${CI_PROJECT_NAME}.rutmirror.ru\`)" \
-            --label traefik.http.services.${CI_PROJECT_NAME}-dev.loadbalancer.server.port="80" \
-            --label traefik.http.routers.${CI_PROJECT_NAME}-dev.entrypoints="web" \
-            lmrctt/${CI_PROJECT_NAME}:dev
+            --label traefik.http.routers.${PROJECT_NAME}-dev.rule="Host(\`dev.${PROJECT_NAME}.rutmirror.ru\`)" \
+            --label traefik.http.services.${PROJECT_NAME}-dev.loadbalancer.server.port="80" \
+            --label traefik.http.routers.${PROJECT_NAME}-dev.entrypoints="web" \
+            lmrctt/${PROJECT_NAME}:dev
         echo -e "${TXT_RED} Копирую репозиторий в контейнер ${TXT_CLEAR}"
-          docker cp app/. ${CI_PROJECT_NAME}.dev:/www/
+          docker cp app/. ${PROJECT_NAME}.dev:/www/
         echo -e "${TXT_RED} Выставляю права на файлы ${TXT_CLEAR}"
-          docker exec ${CI_PROJECT_NAME}.dev chown -R unit:unit /www      
+          docker exec ${PROJECT_NAME}.dev chown -R unit:unit /www      
       else
-        echo -e "${TXT_RED} Контейнер с именем '${CI_PROJECT_NAME}.dev' не существует ${TXT_CLEAR}"
+        echo -e "${TXT_RED} Контейнер с именем '${PROJECT_NAME}.dev' не существует ${TXT_CLEAR}"
           docker run -d \
-            --name ${CI_PROJECT_NAME}.dev \
+            --name ${PROJECT_NAME}.dev \
             --restart unless-stopped \
             --network docker-network \
             --label traefik.enable="true" \
-            --label traefik.http.routers.${CI_PROJECT_NAME}-dev.rule="Host(\`dev.${CI_PROJECT_NAME}.rutmirror.ru\`)" \
-            --label traefik.http.services.${CI_PROJECT_NAME}-dev.loadbalancer.server.port="80" \
-            --label traefik.http.routers.${CI_PROJECT_NAME}-dev.entrypoints="web" \
-            lmrctt/${CI_PROJECT_NAME}:dev
+            --label traefik.http.routers.${PROJECT_NAME}-dev.rule="Host(\`dev.${PROJECT_NAME}.rutmirror.ru\`)" \
+            --label traefik.http.services.${PROJECT_NAME}-dev.loadbalancer.server.port="80" \
+            --label traefik.http.routers.${PROJECT_NAME}-dev.entrypoints="web" \
+            lmrctt/${PROJECT_NAME}:dev
         echo -e "${TXT_RED} Копирую репозиторий в контейнер ${TXT_CLEAR}"
-          docker cp app/. ${CI_PROJECT_NAME}.dev:/www/
+          docker cp app/. ${PROJECT_NAME}.dev:/www/
         echo -e "${TXT_RED} Выставляю права на файлы ${TXT_CLEAR}"
-          docker exec ${CI_PROJECT_NAME}.dev chown -R unit:unit /www
+          docker exec ${PROJECT_NAME}.dev chown -R unit:unit /www
       fi
   rules:
     - if: $CI_COMMIT_BRANCH == 'dev'
