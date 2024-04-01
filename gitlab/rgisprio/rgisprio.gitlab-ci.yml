@@ -16,11 +16,12 @@ deploy prod:
         echo -e "${TXT_RED} Контейнер с именем ${PROJECT_NAME}.prod существует ${TXT_CLEAR}"
         echo -e "${TXT_RED} Останавливаю контейнер ${PROJECT_NAME}.prod ${TXT_CLEAR}"
           docker container stop ${PROJECT_NAME}.prod
+        echo -e "${TXT_RED} Удаляю контейнер ${PROJECT_NAME}.prod ${TXT_CLEAR}"
           docker container rm ${PROJECT_NAME}.prod
         echo -e "${TXT_RED} Скачиваю последнею версию образа ${PROJECT_NAME}:prod ${TXT_CLEAR}"
           docker pull lmrctt/${PROJECT_NAME}:prod
-        echo -e "${TXT_RED} Запускаю контейнер ${TXT_CLEAR}"
-          docker run -d \
+        echo -e "${TXT_RED} Создаю контейнер ${TXT_CLEAR}"
+          docker container create \
             --name ${PROJECT_NAME}.prod \
             --restart unless-stopped \
             --network docker-network \
@@ -31,11 +32,13 @@ deploy prod:
             lmrctt/${PROJECT_NAME}:prod
         echo -e "${TXT_RED} Копирую репозиторий в контейнер ${TXT_CLEAR}"
           docker cp app/. ${PROJECT_NAME}.prod:/www/
+        echo -e "${TXT_RED} Запускаю контейнер ${TXT_CLEAR}"
+          docker container start ${PROJECT_NAME}.prod
         echo -e "${TXT_RED} Выставляю права на файлы ${TXT_CLEAR}"
           docker exec ${PROJECT_NAME}.prod chown -R unit:unit /www      
       else
         echo -e "${TXT_RED} Контейнер с именем '${PROJECT_NAME}.prod' не существует ${TXT_CLEAR}"
-          docker run -d \
+          docker container create \
             --name ${PROJECT_NAME}.prod \
             --restart unless-stopped \
             --network docker-network \
@@ -46,6 +49,8 @@ deploy prod:
             lmrctt/${PROJECT_NAME}:prod
         echo -e "${TXT_RED} Копирую репозиторий в контейнер ${TXT_CLEAR}"
           docker cp app/. ${PROJECT_NAME}.prod:/www/
+        echo -e "${TXT_RED} Запускаю контейнер ${TXT_CLEAR}"
+          docker container start ${PROJECT_NAME}.prod
         echo -e "${TXT_RED} Выставляю права на файлы ${TXT_CLEAR}"
           docker exec ${PROJECT_NAME}.prod chown -R unit:unit /www      
       fi
@@ -69,11 +74,12 @@ deploy dev:
         echo -e "${TXT_RED} Контейнер с именем ${PROJECT_NAME}.dev существует ${TXT_CLEAR}"
         echo -e "${TXT_RED} Останавливаю контейнер ${PROJECT_NAME}.dev ${TXT_CLEAR}"
           docker container stop ${PROJECT_NAME}.dev
+        echo -e "${TXT_RED} Удаляю контейнер ${PROJECT_NAME}.prod ${TXT_CLEAR}"
           docker container rm ${PROJECT_NAME}.dev
         echo -e "${TXT_RED} Скачиваю последнею версию образа ${PROJECT_NAME}:dev ${TXT_CLEAR}"
           docker pull lmrctt/${PROJECT_NAME}:dev
-        echo -e "${TXT_RED} Запускаю контейнер ${TXT_CLEAR}"
-          docker run -d \
+        echo -e "${TXT_RED} Создаю контейнер ${TXT_CLEAR}"
+          docker container create \
             --name ${PROJECT_NAME}.dev \
             --restart unless-stopped \
             --network docker-network \
@@ -84,11 +90,13 @@ deploy dev:
             lmrctt/${PROJECT_NAME}:dev
         echo -e "${TXT_RED} Копирую репозиторий в контейнер ${TXT_CLEAR}"
           docker cp app/. ${PROJECT_NAME}.dev:/www/
+        echo -e "${TXT_RED} Запускаю контейнер ${TXT_CLEAR}"
+          docker container start ${PROJECT_NAME}.dev
         echo -e "${TXT_RED} Выставляю права на файлы ${TXT_CLEAR}"
           docker exec ${PROJECT_NAME}.dev chown -R unit:unit /www      
       else
         echo -e "${TXT_RED} Контейнер с именем '${PROJECT_NAME}.dev' не существует ${TXT_CLEAR}"
-          docker run -d \
+          docker container create \
             --name ${PROJECT_NAME}.dev \
             --restart unless-stopped \
             --network docker-network \
@@ -99,6 +107,8 @@ deploy dev:
             lmrctt/${PROJECT_NAME}:dev
         echo -e "${TXT_RED} Копирую репозиторий в контейнер ${TXT_CLEAR}"
           docker cp app/. ${PROJECT_NAME}.dev:/www/
+        echo -e "${TXT_RED} Запускаю контейнер ${TXT_CLEAR}"
+          docker container start ${PROJECT_NAME}.dev
         echo -e "${TXT_RED} Выставляю права на файлы ${TXT_CLEAR}"
           docker exec ${PROJECT_NAME}.dev chown -R unit:unit /www
       fi
